@@ -1,24 +1,32 @@
-import socketserver
 from Server.server_interface import ServerInterface
+import socket
 
 
-class TCPServer(ServerInterface):
+class SerialTCPSocketServer(ServerInterface):
 
-    def __init__(self,interface = '', ipv4_addr, port, request_handler):
-        self.interface = interface
-        self.ipv4_addr = ipv4_addr
-        self.port = port
-        self.request_handler = request_handler
+    
+    QUEUE_FOR_CONNECTORS_SIZE = 1
 
-        # self.socket = socket.socket()
-        # self.socket.bind(self.interface, port) #'' - all interface
-        # self.socket.connect((self.ipv4_addr, self.port))
+    def __init__(self, ipv4_addr, port, request_handler_factory):
+        super.__init__(ipv4_addr, port, request_handler_factory)
+        self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
         
     def start_server(self):
-        with socketserver.TCPServer((self.ipv4_addr, self.port), self.request_handler) as server:
-            self.server = server
-            self.server.serve_forever()
-        
+        self.socket.bind(self.ipv4_addr, self.port)
+        self.socket.listen(self.QUEUE_FOR_CONNECTORS_SIZE)
+
+        while 1:
+            client_socket, client_addr = self.socket.accept()
+            #нет гарантий, что команда поместиться в эту строку. Надо уточнить
+            recieved_data = client_socket.recv(2048)
+            command_and_params, data = recieved_data.split('\n', maxsplit=1)
+            request_handler = self.request_handler_factory.get_request_handler(command_and_params)
+
+            while len(data):
+                client_socket.send(request_handler.handle_request(data))
+                data = client_socket.recv(2048)
+
 
     def stop_server(self):
-        self.server.shutdown()
+        pass
+

@@ -1,9 +1,7 @@
 from RequestHandler.request_handler_interface import RequestHandlerInterface
 
 
-class RemoteConsoleRequestHandler(RequestHandlerInterface):
+class ExitRequestHandler((RequestHandlerInterface)):
 
     def handle_request(self, data):
-        pass
-
-
+        raise NotImplementedError
