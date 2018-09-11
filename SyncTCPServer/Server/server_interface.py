@@ -5,6 +5,9 @@ class ServerInterface:
         self.port = port
         self.request_handler_factory = request_handler_factory
 
+    def __shutdown(self):
+        raise NotImplementedError
+
     def start_server(self):
         raise NotImplementedError
 

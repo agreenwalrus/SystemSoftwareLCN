@@ -1,11 +1,17 @@
-import RequestHandler
+import RequestHandler.unknown_request_handler
+import RequestHandler.date_request_handler
+import RequestHandler.echo_request_handler
+import RequestHandler.exit_request_handler
+import RequestHandler.file_download_request_handler
+import RequestHandler.file_upload_request_handler
 from request_handler_factory_interface import RequestHandlerFactoryInterface
+
 
 
 class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
 
     def get_request_handler(self, request_str):
-        command, params = super.get_request_handler(request_str)
+        command, params = super().get_request_handler(request_str)
         handlers_dict = {
             "echo": RemoteConsoleRequestHandlerFactory.get_echo_request_handler,
             "date": RemoteConsoleRequestHandlerFactory.get_date_request_handler,
