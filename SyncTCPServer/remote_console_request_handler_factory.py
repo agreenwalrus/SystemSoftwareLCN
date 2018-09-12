@@ -1,7 +1,6 @@
 import RequestHandler.unknown_request_handler
 import RequestHandler.date_request_handler
 import RequestHandler.echo_request_handler
-import RequestHandler.exit_request_handler
 import RequestHandler.file_download_request_handler
 import RequestHandler.file_upload_request_handler
 from request_handler_factory_interface import RequestHandlerFactoryInterface
@@ -15,7 +14,6 @@ class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
         handlers_dict = {
             "echo": RemoteConsoleRequestHandlerFactory.get_echo_request_handler,
             "date": RemoteConsoleRequestHandlerFactory.get_date_request_handler,
-            "exit": RemoteConsoleRequestHandlerFactory.get_exit_request_handler,
             "upload": RemoteConsoleRequestHandlerFactory.get_file_upload_request_handler,
             "download": RemoteConsoleRequestHandlerFactory.get_file_download_request_handler,
             "unknown": RemoteConsoleRequestHandlerFactory.get_unknown_request_handler
@@ -33,10 +31,6 @@ class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
     @staticmethod
     def get_date_request_handler(params):
         return RequestHandler.date_request_handler.DateRequestHandler(params)
-
-    @staticmethod
-    def get_exit_request_handler(params):
-        return RequestHandler.exit_request_handler.ExitRequestHandler(params)
 
     @staticmethod
     def get_file_upload_request_handler(params):

@@ -1,5 +1,8 @@
 class RequestHandlerFactoryInterface:
 
+    OK = 0
+    ERROR = 1
+
     def get_request_handler(self, request_str):
         if ' ' in request_str:
             command, params_str = request_str.split(' ', maxsplit=1)

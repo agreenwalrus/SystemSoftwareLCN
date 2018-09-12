@@ -21,21 +21,24 @@ class SerialTCPSocketServer(ServerInterface):
 
         client_socket, client_addr = self.socket.accept()
         client_socket.recv(2048)
+        self.socket.setblocking(0)
         while self.__running_server == self.RUN_SERVER:
             recieved_data = ''
-
             while '\n' not in recieved_data:
                 recieved_data += client_socket.recv(2048).decode("cp1252")
-
             print(recieved_data)
-            command_and_params, data = recieved_data.split('\n', maxsplit=1)
-            request_handler = self.request_handler_factory.get_request_handler(command_and_params)
+            command_and_params, data = recieved_data.split('\r\n', maxsplit=1)
+            if command_and_params == 'exit':
+                self.stop_server()
+            else:
+                request_handler = self.request_handler_factory.get_request_handler(command_and_params)
+                client_socket.send(request_handler.handle_request().encode("cp1252"))
 
-            while len(data):
-                client_socket.send(request_handler.handle_request(data))
-                data = client_socket.recv(2048)
+                while len(data):
+                    client_socket.send(request_handler.handle_request(data).encode("cp1252"))
+                    data = client_socket.recv(2048)
 
-        self.shut_down()
+        self.stop_server()
 
     def __shutdown(self):
         self.socket.shutdown()
