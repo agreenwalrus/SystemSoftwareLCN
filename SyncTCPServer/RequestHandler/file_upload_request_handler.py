@@ -1,19 +1,30 @@
-from RequestHandler.request_handler_interface import RequestHandlerInterface
+from RequestHandler.request_handler_interface import *
 import sys
 
 class FileUploadRequestHandler((RequestHandlerInterface)):
 
-    def handle_request(self, data):
-        file = open('./files/' + self.params[0], 'wb')
-        file.write(data)
-        file.close()
+    def parse_params_and_data(self):
+        filename, data = self.params_and_data.split(' ', maxsplit=1)
+        file_size, data = self.parse_params_and_data.split('\r\n', maxsplit=1)
+        return filename, file_size, data
 
-    def handle_request(self):
-        if len(self.params) == 0:
-            return "ENTER FILENAME 'upload filename'", self.ERROR
-        else:
-            return "FILE IS BEING UPLOADED", self.OK
+    def handle_request(self, socket):
+        try:
+            file_name, file_size, data = self.parse_params_and_data()
+            file = open('./files/' + file_name, 'wb')
+            size = int(file_size)
+            size_of_saved_part = 0
+            while(len(data) >= 0):
+                file.write(data)
+                data = socket.recv(2048)
+                size_of_saved_part += len(data)
+                percent = size_of_saved_part / size
+                socket.send(percent)
 
+            file.close()
+            return OK
+        except IOError:
+            return ERROR
 
 
 
