@@ -11,10 +11,10 @@ class FileUploadRequestHandler((RequestHandlerInterface)):
     def handle_request(self, socket):
         try:
             file_name, file_size, data = self.parse_params_and_data()
-            file = open('./files/' + file_name, 'wb')
+            file = open('./files/' + file_name, 'w')
             size = int(file_size)
             size_of_saved_part = 0
-            while(len(data) >= 0):
+            while len(data) >= 0:
                 file.write(data)
                 data = socket.recv(2048)
                 size_of_saved_part += len(data)
@@ -22,6 +22,7 @@ class FileUploadRequestHandler((RequestHandlerInterface)):
                 socket.send(percent)
 
             file.close()
+            socket.send("File [%s]" + file_name + " is uploaded\r\n")
             return OK
         except IOError:
             return ERROR
