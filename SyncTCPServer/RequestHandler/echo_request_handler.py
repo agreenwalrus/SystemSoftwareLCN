@@ -1,13 +1,13 @@
-from RequestHandler.request_handler_interface import RequestHandlerInterface
+from RequestHandler.request_handler_interface import *
 
 
 class EchoRequestHandler(RequestHandlerInterface):
 
-    def handle_request(self, data):
-        return data + '\r\n'
-
-    def handle_request(self):
-        if len(self.params):
-            return ' '.join(self.params) + '\r\n'
+    def handle_request(self, socket):
+        if '\r\n' in self.params_and_data:
+            params, data = self.parse_params_and_data()
+            data_for_sending = (params + '\r\n')
         else:
-            return ''
+            data_for_sending = ''
+        socket.send(data_for_sending.encode("cp1252"))
+        return OK

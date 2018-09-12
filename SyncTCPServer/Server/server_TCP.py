@@ -1,4 +1,5 @@
 from Server.server_interface import ServerInterface
+from RequestHandler import request_handler_interface
 import socket
 
 
@@ -27,16 +28,10 @@ class SerialTCPSocketServer(ServerInterface):
             while '\n' not in recieved_data:
                 recieved_data += client_socket.recv(2048).decode("cp1252")
             print(recieved_data)
-            command_and_params, data = recieved_data.split('\r\n', maxsplit=1)
-            if command_and_params == 'exit':
-                self.stop_server()
-            else:
-                request_handler = self.request_handler_factory.get_request_handler(command_and_params)
-                client_socket.send(request_handler.handle_request().encode("cp1252"))
-
-                while len(data):
-                    client_socket.send(request_handler.handle_request(data).encode("cp1252"))
-                    data = client_socket.recv(2048)
+            request_handler = self.request_handler_factory.get_request_handler(recieved_data)
+            code = request_handler.handle_request(client_socket)
+            if code == request_handler_interface.STOP_SERVER or code == request_handler_interface.STOP_SERVER:
+                break
 
         self.stop_server()
 

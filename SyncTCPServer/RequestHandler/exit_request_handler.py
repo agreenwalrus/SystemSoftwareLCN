@@ -1,7 +1,7 @@
-from RequestHandler.request_handler_interface import RequestHandlerInterface
+from RequestHandler.request_handler_interface import *
 
 
-class ExitRequestHandler((RequestHandlerInterface)):
+class ExitRequestHandler(RequestHandlerInterface):
 
-    def handle_request(self, data):
-        raise NotImplementedError
+    def handle_request(self, socket):
+        return STOP_SERVER
