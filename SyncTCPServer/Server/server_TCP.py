@@ -1,8 +1,5 @@
-
+from Server.server_interface import ServerInterface
 import socket
-
-from SyncTCPServer.Server.server_interface import ServerInterface
-from SyncTCPServer.request_handler import request_handler
 
 
 class SerialTCPSocketServer(ServerInterface):
@@ -23,6 +20,7 @@ class SerialTCPSocketServer(ServerInterface):
         self.__running_server = self.RUN_SERVER
 
         client_socket, client_addr = self.socket.accept()
+        client_socket.recv(2048)
         while self.__running_server == self.RUN_SERVER:
             recieved_data = ''
 
@@ -31,8 +29,12 @@ class SerialTCPSocketServer(ServerInterface):
 
             print(recieved_data)
             command_and_params, data = recieved_data.split('\n', maxsplit=1)
-            request = request_handler().get_ansver(command_and_params)
-            client_socket.send(str.encode(request))
+            request_handler = self.request_handler_factory.get_request_handler(command_and_params)
+
+            while len(data):
+                client_socket.send(request_handler.handle_request(data))
+                data = client_socket.recv(2048)
+
         self.shut_down()
 
     def __shutdown(self):

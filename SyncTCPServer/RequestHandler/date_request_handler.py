@@ -1,7 +1,7 @@
-from SyncTCPServer.RequestHandler.request_handler_interface import RequestHandlerInterface
-import datetime
+from RequestHandler.request_handler_interface import RequestHandlerInterface
+
 
 class DateRequestHandler((RequestHandlerInterface)):
 
     def handle_request(self, data):
-        return str(datetime.datetime.now())
+        raise NotImplementedError
