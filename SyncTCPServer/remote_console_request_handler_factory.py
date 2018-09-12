@@ -1,11 +1,6 @@
-import RequestHandler.unknown_request_handler
-import RequestHandler.date_request_handler
-import RequestHandler.echo_request_handler
-import RequestHandler.exit_request_handler
-import RequestHandler.file_download_request_handler
-import RequestHandler.file_upload_request_handler
-from request_handler_factory_interface import RequestHandlerFactoryInterface
-
+from SyncTCPServer.RequestHandler import echo_request_handler, date_request_handler, exit_request_handler, \
+    file_upload_request_handler, file_download_request_handler, unknown_request_handler
+from SyncTCPServer.request_handler_factory_interface import RequestHandlerFactoryInterface
 
 
 class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
@@ -13,7 +8,7 @@ class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
     def get_request_handler(self, request_str):
         command, params = super().get_request_handler(request_str)
         handlers_dict = {
-            "echo": RemoteConsoleRequestHandlerFactory.get_echo_request_handler,
+            "echo": echo_request_handler.EchoRequestHandler,
             "date": RemoteConsoleRequestHandlerFactory.get_date_request_handler,
             "exit": RemoteConsoleRequestHandlerFactory.get_exit_request_handler,
             "upload": RemoteConsoleRequestHandlerFactory.get_file_upload_request_handler,
@@ -28,25 +23,25 @@ class RemoteConsoleRequestHandlerFactory(RequestHandlerFactoryInterface):
 
     @staticmethod
     def get_echo_request_handler(params):
-        return RequestHandler.echo_request_handler.EchoRequestHandler(params)
+        return echo_request_handler.EchoRequestHandler(params)
 
     @staticmethod
     def get_date_request_handler(params):
-        return RequestHandler.date_request_handler.DateRequestHandler(params)
+        return date_request_handler.DateRequestHandler(params)
 
     @staticmethod
     def get_exit_request_handler(params):
-        return RequestHandler.exit_request_handler.ExitRequestHandler(params)
+        return exit_request_handler.ExitRequestHandler(params)
 
     @staticmethod
     def get_file_upload_request_handler(params):
-        return RequestHandler.file_upload_request_handler.FileUploadRequestHandler(params)
+        return file_upload_request_handler.FileUploadRequestHandler(params)
 
     @staticmethod
     def get_file_download_request_handler(params):
-        return RequestHandler.file_download_request_handler.FileDownloadRequestHandler(params)
+        return file_download_request_handler.FileDownloadRequestHandler(params)
 
     @staticmethod
     def get_unknown_request_handler(params):
-        return RequestHandler.unknown_request_handler.UnknownRequestHandler(params)
+        return unknown_request_handler.UnknownRequestHandler(params)
 
