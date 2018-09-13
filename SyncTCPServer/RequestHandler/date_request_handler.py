@@ -4,6 +4,6 @@ import datetime
 class DateRequestHandler((RequestHandlerInterface)):
 
     def handle_request(self, socket):
-        socket.send((datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\r\n'). encode("cp1252"))
+        socket.sendall((datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\r\n').encode("cp1252"))
         return OK
 
