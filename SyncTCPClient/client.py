@@ -4,8 +4,8 @@ import os
 import progressbar
 
 
-class  SerialTCPSocketClient:
-    def __init__(self,  ipv4_addr, port):
+class SerialTCPSocketClient:
+    def __init__(self, ipv4_addr, port):
         self.ipv4_addr = ipv4_addr
         self.port = port
 
@@ -13,14 +13,16 @@ class  SerialTCPSocketClient:
 
     def start_client(self):
         self.socket.connect((self.ipv4_addr, self.port))
+        print('Connection is established')
+
         input_line = ''
-        while input_line != 'exit':
+        while not input_line.startswith('exit'):
             input_line = input()
 
-            if  input_line.startswith('download'):
+            if input_line.startswith('download'):
                 self.download(input_line)
                 continue
-            elif input_line.startswith('upload') :
+            elif input_line.startswith('upload'):
                 self.upload(input_line)
                 continue
             else:
@@ -40,7 +42,7 @@ class  SerialTCPSocketClient:
                 file_size_remaining = int.from_bytes(self.socket.recv(8), byteorder='big', signed=True)
 
                 if file_size_remaining == -1:
-                    print('файл не найден')
+                    print('file not faund')
                     return
 
                 file = open('./files/' + file_name, 'w+b')
@@ -52,10 +54,9 @@ class  SerialTCPSocketClient:
                         file.write(data)
                         file_size_remaining -= len(data)
 
-                        bar.update(int(((file_size - file_size_remaining) / file_size)*100))
+                        bar.update(int(((file_size - file_size_remaining) / file_size) * 100))
 
                 file.close()
-                print('file download')
                 return
         print('input file name please')
 
@@ -69,12 +70,19 @@ class  SerialTCPSocketClient:
                     statinfo = os.stat(file_name)
                     file_size_remaining = statinfo.st_size
 
-                    file_name_without_path =  file_name.split('/')[-1]
-                    self.socket.sendall(('upload ' + file_name_without_path + ' ' + str(file_size_remaining) + "\r\n").encode('cp1252'))
+                    if '/' in file_name:
+                        file_name_without_path = file_name.split('/')[-1]
+                    elif '\\' in file_name:
+                        file_name_without_path = file_name.split('\\')[-1]
+                    else:
+                        print('File is not found')
+
+                    self.socket.sendall(
+                        ('upload ' + file_name_without_path + ' ' + str(file_size_remaining) + "\r\n").encode('cp1252'))
 
                     file = open(file_name, 'rb')
 
-                    self.socket.recv(1024) #sync
+                    self.socket.recv(1024)  # sync
 
                     file_size = file_size_remaining
                     with progressbar.ProgressBar(max_value=100) as bar:
@@ -89,13 +97,11 @@ class  SerialTCPSocketClient:
                             bar.update(int(((file_size - file_size_remaining) / file_size) * 100))
                     file.close()
                 except FileNotFoundError:
-                    print('file not faund')
+                    print('file is not found')
                     return
-
-                print('file send')
                 return
         print('input file name please')
 
     def close_socket(self):
-        self.socket.shutdown()
+        self.socket.shutdown(socket.SHUT_RDWR)
         self.socket.close()
