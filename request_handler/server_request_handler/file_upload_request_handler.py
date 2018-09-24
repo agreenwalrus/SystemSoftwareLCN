@@ -1,4 +1,5 @@
 from request_handler.server_request_handler.server_request_handler_interface import *
+from sockets.socket_interface import PACKAGE_SIZE
 
 
 class FileUploadRequestHandler((RequestHandlerInterface)):
@@ -18,7 +19,7 @@ class FileUploadRequestHandler((RequestHandlerInterface)):
             print("File [", file_name, "] is uploading")
             while file_size_remaining != 0:
 
-                data = socket.recv(1024)
+                data = socket.recv(PACKAGE_SIZE)
                 file.write(data)
                 file_size_remaining -= len(data)
 

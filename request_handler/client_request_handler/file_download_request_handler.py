@@ -1,6 +1,8 @@
 from request_handler.client_request_handler.client_request_handler_interface import *
 import progressbar
 
+from sockets.socket_interface import PACKAGE_SIZE
+
 
 class FileDownloadRequestHandler(RequestHandlerInterface):
 
@@ -12,7 +14,7 @@ class FileDownloadRequestHandler(RequestHandlerInterface):
             if file_name != '':
                 socket.send(bytes(input_line + "\r\n", ENCODE))
 
-                file_size_remaining = int.from_bytes(socket.recv(1024), byteorder='big', signed=True)
+                file_size_remaining = int.from_bytes(socket.recv(PACKAGE_SIZE), byteorder='big', signed=True)
 
                 if file_size_remaining == -1:
                     return ERROR, "File is not found!"
@@ -22,7 +24,7 @@ class FileDownloadRequestHandler(RequestHandlerInterface):
                 file_size = file_size_remaining
                 with progressbar.ProgressBar(max_value=100) as bar:
                     while file_size_remaining != 0:
-                        data = socket.recv(1024)
+                        data = socket.recv(PACKAGE_SIZE)
                         file.write(data)
                         file_size_remaining -= len(data)
 

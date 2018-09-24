@@ -2,6 +2,8 @@ from request_handler.client_request_handler.client_request_handler_interface imp
 import os
 import progressbar
 
+from sockets.socket_interface import PACKAGE_SIZE, USEFUL_PACKAGE_SIZE
+
 
 class FileUploadRequestHandler(RequestHandlerInterface):
 
@@ -16,7 +18,7 @@ class FileUploadRequestHandler(RequestHandlerInterface):
         if ' ' in input_line:
             file_name = input_line.split(' ', maxsplit=1)[1]
             if file_name != '':
-                pack_size = 1024
+                pack_size = USEFUL_PACKAGE_SIZE
 
                 try:
                     statinfo = os.stat(file_name)
@@ -28,7 +30,7 @@ class FileUploadRequestHandler(RequestHandlerInterface):
 
                     file = open(file_name, 'rb')
 
-                    socket.recv(1024)  # sync
+                    socket.recv(PACKAGE_SIZE)  # sync
 
                     file_size = file_size_remaining
                     with progressbar.ProgressBar(max_value=100) as bar:

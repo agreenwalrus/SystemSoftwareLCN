@@ -1,10 +1,13 @@
 from request_handler.server_request_handler.server_request_handler_interface import *
 import os
 
+from sockets.socket_interface import PACKAGE_SIZE, USEFUL_PACKAGE_SIZE
+
+
 class FileDownloadRequestHandler(RequestHandlerInterface):
 
     def handle_request(self, socket):
-        pack_size = 1024
+        pack_size = USEFUL_PACKAGE_SIZE
         try:
             file_name, data = self.parse_params_and_data()
 

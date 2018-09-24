@@ -7,12 +7,12 @@ import request_handler.client_request_handler.client_request_handler_interface a
 
 
 class SerialTCPSocketClient(ClientInterface):
-    def __init__(self,  ipv4_addr, port, request_handler_factory):
-        super().__init__(ipv4_addr, port, request_handler_factory)
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def __init__(self,  ipv4_addr, port, socket, request_handler_factory):
+        super().__init__(ipv4_addr, port, socket, request_handler_factory)
+        #self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def start_client(self):
-        self.socket.connect((self.ipv4_addr, self.port))
+        self.socket.connect(self.ipv4_addr, self.port)
         print("Connection with ", self.ipv4_addr, ":", self.port, " is established.")
         code = rh.OK
         while code != rh.STOP_CLIENT:

@@ -1,32 +1,27 @@
-from socket import socket
+from socket import *
 
-IPV4_FAMILY_ADDRESS = socket.AF_INET
-TCP_SOCKET = socket.SOCK_STREAM
-UDP_SOCKET = socket.SOCK_DGRAM
+IPV4_FAMILY_ADDRESS = AF_INET
+TCP_SOCKET = SOCK_STREAM
+UDP_SOCKET = SOCK_DGRAM
 
+ENCODE = "cp1252"
+PACKAGE_SIZE = 1024
+USEFUL_PACKAGE_SIZE = PACKAGE_SIZE - 16
 
 class SocketInterface:
+
+    BUF_SIZE = 2048
 
     def __init__(self, address_family, socket_type):
         self.socket = socket(address_family, socket_type)
 
-
-    def connect(self, address, port):
-        return self.socket.connect((address, port))
-
     def bind(self, address, port):
         return self.socket.bind((address, port))
-
-    def listen(self, queue_size):
-        return self.socket.listen(queue_size)
-
-    def  accept(self):
-        return self.socket.accept()
 
     def shutdown(self, how):
         return self.socket.shutdown(how)
 
-    def close(self, ):
+    def close(self):
         return self.socket.close()
 
     def send(self, data):
