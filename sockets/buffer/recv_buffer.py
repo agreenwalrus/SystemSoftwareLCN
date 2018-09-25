@@ -16,6 +16,7 @@ class RecvBuffer:
         return self.current_size
 
     def add_pack(self, syn, data):
+        print("rb:  add_pack syn", syn)
         if self.next_ack == syn or self.next_ack == 0:
             self.next_ack += 1
         self.buffer[syn] = data
@@ -23,13 +24,14 @@ class RecvBuffer:
         print(self.buffer)
 
     def pop_next_pack(self):
+        print("rb:  pop_next_pack")
         min_key = min(self.buffer.keys())
         self.current_size -= 1
         return self.buffer.pop(min_key)
 
     def is_possible_to_add_pack(self, syn):
-        print(not (self.current_size + 1 == self.buffer_size and self.next_ack != syn))
         return not(self.current_size + 1 == self.buffer_size and self.next_ack != syn)
 
     def get_ack(self):
+        print("rb:  get_ack", self.next_ack)
         return self.next_ack

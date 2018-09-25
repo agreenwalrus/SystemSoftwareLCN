@@ -18,11 +18,13 @@ class SentBuffer:
         self.next_pack_num = start_pack_num
 
     def add_pack(self, data):
+        print("sb: add_pack ", self.next_pack_num)
         self.buffer[self.next_pack_num] = data
         self.next_pack_num += 1
         self.current_size += 1
 
     def get_next_pack(self):
+        print("sb: get_next_pack")
         self.current_pack_num_to_send += 1
         keys = self.buffer.keys()
         if self.current_pack_num_to_send > max(keys):
@@ -30,6 +32,7 @@ class SentBuffer:
         return self.current_pack_num_to_send, self.buffer[self.current_pack_num_to_send]
 
     def delete_pack(self, ack):
+        print("sb: delete_pack ", ack)
         if self.buffer_size == 0:
             keys = self.buffer.keys()
             min_key = min(keys)

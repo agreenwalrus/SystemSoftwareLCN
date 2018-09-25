@@ -79,24 +79,28 @@ class UDPSocket(SocketInterface):
     def __send_next_pack(self):
         if self.sent_buffer.get_current_size() > 0:
             syn, data = self.sent_buffer.get_next_pack()
-        packed_data = UDPSocket.pack_data(syn, self.recv_buffer.get_ack(), data)
-        return self.socket.sendto(packed_data, self.connected_socket)
+            packed_data = UDPSocket.pack_data(syn, self.recv_buffer.get_ack(), data)
+            print("__send_nex_pack", self.sent_buffer)
+            return self.socket.sendto(packed_data, self.connected_socket)
 
     def __recv(self, size_of_data):
         data, self.connected_socket = self.socket.recvfrom(size_of_data)
         syn, ack, data = UDPSocket.unpack_data(data)
-        print("recieved ", syn, ack, data)
+        print("__recv ", syn, ack, data)
         if self.recv_buffer.is_possible_to_add_pack(syn):
             self.sent_buffer.delete_pack(ack)
             self.recv_buffer.add_pack(syn, data)
+            print("rb ", self.recv_buffer)
         return
 
     def send(self, data):
+        print("send")
         if self.sent_buffer.get_current_size() < self.sent_buffer.get_buffer_capacity():
             self.sent_buffer.add_pack(data)
         return
 
     def recv(self, size_of_data):
+        print("recv")
         while self.recv_buffer.get_current_size() == 0:
             time.sleep(0.005)
         return self.recv_buffer.pop_next_pack()
