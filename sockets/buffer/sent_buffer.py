@@ -33,9 +33,9 @@ class SentBuffer:
 
     def delete_pack(self, ack):
         print("sb: delete_pack ", ack)
-        if self.buffer_size == 0:
+        if self.current_size != 0:
             keys = self.buffer.keys()
             min_key = min(keys)
             for key in range(min_key, ack):
-                self.buffer.pop(ack)
+                self.buffer.pop(key)
                 self.current_size -= 1

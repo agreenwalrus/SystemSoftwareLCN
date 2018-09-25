@@ -16,14 +16,14 @@ SENT_BUFFER_SIZE = 10
 RECV_BUFFER_SIZE = 10
 
 SYN_START = 0
-SYN_END = 7
+SYN_END = 8
 
 ACK_START = 8
-ACK_END = 15
+ACK_END = 16
 
 DATA_START = 16
 
-MIN_PACK_NUM = 0
+MIN_PACK_NUM = 1
 MAX_PACK_NUM = 3000
 
 
@@ -38,6 +38,8 @@ class UDPSocket(SocketInterface):
         super().__init__(IPV4_FAMILY_ADDRESS, UDP_SOCKET)
         self.sent_buffer = SentBuffer(SENT_BUFFER_SIZE)
         self.recv_buffer = RecvBuffer(RECV_BUFFER_SIZE)
+        start_pack_num = random.randint(MIN_PACK_NUM, MAX_PACK_NUM)
+        self.sent_buffer.set_start_pack_num(start_pack_num)
 
     @staticmethod
     def pack_data(syn, ack, data):
@@ -45,8 +47,8 @@ class UDPSocket(SocketInterface):
 
     @staticmethod
     def unpack_data(data):
-        syn = int.from_bytes(data[SYN_START:SYN_END], byteorder='big', signed=True)
-        ack = int.from_bytes(data[ACK_START:ACK_END], byteorder='big', signed=True)
+        syn = int.from_bytes(data[SYN_START:SYN_END], byteorder='big')
+        ack = int.from_bytes(data[ACK_START:ACK_END], byteorder='big')
         return syn, ack, data[DATA_START:]
 
     def listen(self, queue_size):
@@ -54,16 +56,14 @@ class UDPSocket(SocketInterface):
 
     def connect(self, address, port):
         self.connected_socket = (address, port)
-        start_pack_num = random.randint(MIN_PACK_NUM, MAX_PACK_NUM)
-        self.sent_buffer.set_start_pack_num(start_pack_num)
         self.send('SYN'.encode(ENCODE))
         self.__send_next_pack()
         self.__recv(self.BUF_SIZE)
         self.recv(self.BUF_SIZE)
         self.send('ACK'.encode(ENCODE))
         self.__send_next_pack()
-        Thread(target=self.__send_next_pack).start()
-        Thread(target=self.__recv, args=(self.BUF_SIZE, )).start()
+        Thread(target=self.__send_thread).start()
+        Thread(target=self.__recv_thread, args=(self.BUF_SIZE, )).start()
 
     def accept(self):
         self.__recv(self.BUF_SIZE)
@@ -72,9 +72,19 @@ class UDPSocket(SocketInterface):
         self.__send_next_pack()
         self.__recv(self.BUF_SIZE)
         self.recv(self.BUF_SIZE)
-        Thread(target=self.__send_next_pack).start()
-        Thread(target=self.__recv, args=(self.BUF_SIZE,)).start()
+        Thread(target=self.__send_thread).start()
+        Thread(target=self.__recv_thread, args=(self.BUF_SIZE,)).start()
         return self, self.connected_socket
+
+
+    def __recv_thread(self, size_of_data):
+        while True:
+            self.__recv(size_of_data)
+
+    def __send_thread(self):
+        while True:
+            self.__send_next_pack()
+            time.sleep(0.005)
 
     def __send_next_pack(self):
         if self.sent_buffer.get_current_size() > 0:

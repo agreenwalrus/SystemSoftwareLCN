@@ -17,7 +17,9 @@ class RecvBuffer:
 
     def add_pack(self, syn, data):
         print("rb:  add_pack syn", syn)
-        if self.next_ack == syn or self.next_ack == 0:
+        if self.next_ack == 0:
+            self.next_ack = syn + 1
+        elif self.next_ack == syn:
             self.next_ack += 1
         self.buffer[syn] = data
         self.current_size += 1
