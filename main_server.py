@@ -1,11 +1,12 @@
 from server.servers.serial_socket_server import SerialTCPSocketServer
 from request_handler_factory.rhf_server.remote_console_request_handler_factory import RemoteConsoleRequestHandlerFactory
+from sockets.rktp_socket import RKTPSocket
 from sockets.udp_socket import UDPSocket
 #from sockets.tcp_socket import TCPSocket
 
 import re
 
-server = SerialTCPSocketServer("0.0.0.0", 36000, UDPSocket(), RemoteConsoleRequestHandlerFactory())
+server = SerialTCPSocketServer("0.0.0.0", 36000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
 server.start_server()
 
 # if __name__=='__main__':

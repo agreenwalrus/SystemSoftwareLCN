@@ -33,6 +33,8 @@ class SerialTCPSocketServer(ServerInterface):
                 request_handler = self.request_handler_factory.get_request_handler(recieved_data)
                 code = request_handler.handle_request(client_socket)
                 print("Code of operation: ", code)
+                print('rcv :', len(self.socket.recv_buffer), 'sent : ', len(self.socket.sent_buffer))
+                print('rcv : ', self.socket.next_send_pack_number, 'sent :', self.socket.next_rcv_pack_number)
 
             client_socket.shutdown(socket.SHUT_RDWR)
             client_socket.close()
