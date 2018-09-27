@@ -2,7 +2,7 @@ from sockets.buffer.recv_buffer import RecvBuffer
 from sockets.buffer.sent_buffer import SentBuffer
 from sockets.socket_interface import *
 import random
-from threading import Thread
+from threading import Thread, Event
 import time
 from sockets.buffer.buffer import Buffer
 import time
@@ -40,6 +40,8 @@ class UDPSocket(SocketInterface):
         self.recv_buffer = RecvBuffer(RECV_BUFFER_SIZE)
         start_pack_num = random.randint(MIN_PACK_NUM, MAX_PACK_NUM)
         self.sent_buffer.set_start_pack_num(start_pack_num)
+        self.__send_event = Event()
+        self.__send_event.clear()
 
     @staticmethod
     def pack_data(syn, ack, data):
@@ -83,8 +85,9 @@ class UDPSocket(SocketInterface):
 
     def __send_thread(self):
         while True:
+            self.__send_event.wait()
+            self.__send_event.clear()
             self.__send_next_pack()
-            time.sleep(0.005)
 
     def __send_next_pack(self):
         if self.sent_buffer.get_current_size() > 0:
@@ -100,17 +103,20 @@ class UDPSocket(SocketInterface):
         if self.recv_buffer.is_possible_to_add_pack(syn):
             self.sent_buffer.delete_pack(ack)
             self.recv_buffer.add_pack(syn, data)
+            #self.sent_buffer.add_pack(' '.encode(ENCODE))
+            self.__send_event.set()
             print("rb ", self.recv_buffer)
         return
 
     def send(self, data):
-        print("send")
         if self.sent_buffer.get_current_size() < self.sent_buffer.get_buffer_capacity():
             self.sent_buffer.add_pack(data)
+        print("send buf size: ", self.sent_buffer.get_current_size())
+        self.__send_event.set()
         return
 
     def recv(self, size_of_data):
-        print("recv")
+        print("recv buf size:", self.recv_buffer.get_current_size())
         while self.recv_buffer.get_current_size() == 0:
             time.sleep(0.005)
         return self.recv_buffer.pop_next_pack()
