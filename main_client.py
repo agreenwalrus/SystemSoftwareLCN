@@ -6,7 +6,7 @@ from sockets.rktp_socket import RKTPSocket
 from sockets.udp_socket import UDPSocket
 #from sockets.tcp_socket import TCPSocket
 
-client = SerialTCPSocketClient("127.0.0.1", 36000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
+client = SerialTCPSocketClient("127.0.0.1", 37000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
 client.start_client()
 #
 

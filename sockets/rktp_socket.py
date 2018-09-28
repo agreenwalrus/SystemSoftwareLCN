@@ -13,6 +13,7 @@ DATA = 2
 RCV_DATA = 1
 
 MAX_LIFE_TIME = sys.maxsize
+SEND_BUFFER_SIZE = 3
 
 
 # server
@@ -56,8 +57,12 @@ class RKTPSocket(SocketInterface):
         return self, self.connected_socket
 
     def send(self, data):
-        with self.sent_buffer_lock:
-            self.sent_buffer.append((self.next_send_pack_number, time.time(), data))
+        while True:
+            with self.sent_buffer_lock:
+                if len(self.sent_buffer) < SEND_BUFFER_SIZE:
+                    self.sent_buffer.append((self.next_send_pack_number, time.time(), data))
+                    break
+            time.sleep(0.1)
 
         self.next_send_pack_number += 1
         if not self.sent_thread_is_started:

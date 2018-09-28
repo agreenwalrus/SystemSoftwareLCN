@@ -6,7 +6,7 @@ from sockets.udp_socket import UDPSocket
 
 import re
 
-server = SerialTCPSocketServer("0.0.0.0", 36000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
+server = SerialTCPSocketServer("0.0.0.0", 37000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
 server.start_server()
 
 # if __name__=='__main__':
