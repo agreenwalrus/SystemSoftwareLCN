@@ -88,8 +88,11 @@ class RKTPSocket(SocketInterface):
             for pack in self.sent_buffer:
                 if pack[TIMESTAMP] - time.time() < MAX_LIFE_TIME:
                     self.socket.sendto(RKTPSocket.get_pack(pack[PACK_NUM], pack[DATA]), self.connected_socket)
+                    print('send : ', len(self.sent_buffer), ' recv : ', len(self.recv_buffer), ' ack : ', len(self.ack_buffer))
                 else:
                     self.sent_buffer.remove(pack)
+
+        time.sleep(0.01)
 
         with self.ack_buffer_lock:
             with self.sent_buffer_lock:
@@ -133,6 +136,7 @@ class RKTPSocket(SocketInterface):
         for p in byffer:
             if p[PACK_NUM] == ack:
                 byffer.remove(p)
+                break
 
     @staticmethod
     def unpack_data(data):
