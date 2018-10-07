@@ -1,12 +1,9 @@
-from server.servers.serial_socket_server import SerialTCPSocketServer
+from server.multiplex_server import MultiplexerServer
 from request_handler_factory.rhf_server.remote_console_request_handler_factory import RemoteConsoleRequestHandlerFactory
-from sockets.rktp_socket import RKTPSocket
-from sockets.udp_socket import UDPSocket
+from sockets.tcp_socket import *
 #from sockets.tcp_socket import TCPSocket
 
-import re
-
-server = SerialTCPSocketServer("0.0.0.0", 37000, RKTPSocket(), RemoteConsoleRequestHandlerFactory())
+server = MultiplexerServer("0.0.0.0", 37000, socket(AF_INET, SOCK_STREAM), RemoteConsoleRequestHandlerFactory())
 server.start_server()
 
 # if __name__=='__main__':

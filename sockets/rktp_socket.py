@@ -69,7 +69,8 @@ class RKTPSocket(SocketInterface):
         self.next_send_pack_number += 1
         if not self.sent_thread_is_started:
             # start sent_thread
-            self.__send_th = Thread(target=self.__send_thread).start()
+            self.__send_th = Thread(target=self.__send_thread)
+            self.__send_th.start()
         else:
             self.sent_thread_start_request = True
 
@@ -84,15 +85,18 @@ class RKTPSocket(SocketInterface):
             time.sleep(0.001)
 
     def __send_thread(self):
+        print("new send thread")
         self.sent_thread_is_started = True
 
         with self.sent_buffer_lock:
             for pack in self.sent_buffer:
                 if pack[TIMESTAMP] - time.time() < MAX_LIFE_TIME:
                     self.socket.sendto(RKTPSocket.get_pack(pack[PACK_NUM], pack[DATA]), self.connected_socket)
+                    print('send : ', len(self.sent_buffer))
                 else:
                     self.sent_buffer.remove(pack)
 
+        time.sleep(0.01)
         with self.ack_buffer_lock:
             with self.sent_buffer_lock:
                 for ack in self.ack_buffer:
@@ -103,7 +107,8 @@ class RKTPSocket(SocketInterface):
                 self.sent_thread_start_request = False
                 # start sent_thread
                 time.sleep(0.001)
-                self.__send_th = Thread(target=self.__send_thread).start()
+                self.__send_th = Thread(target=self.__send_thread)
+                self.__send_th.start()
 
         self.sent_thread_is_started = False
 

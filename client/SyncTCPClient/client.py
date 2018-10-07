@@ -12,7 +12,7 @@ class SerialTCPSocketClient(ClientInterface):
         #self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def start_client(self):
-        self.socket.connect(self.ipv4_addr, self.port)
+        self.socket.connect((self.ipv4_addr, self.port))
         print("Connection with ", self.ipv4_addr, ":", self.port, " is established.")
         code = rh.OK
         while code != rh.STOP_CLIENT:
