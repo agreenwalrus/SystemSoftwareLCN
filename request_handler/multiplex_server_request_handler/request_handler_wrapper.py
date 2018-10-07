@@ -12,18 +12,23 @@ ENCODE = "cp1252"
 class RequestHandlerWrapper:
 
     def __init__(self, request_handler_factory):
-        self.commad = ''
+        self.command = ''
         self.initialized = False
         self.request_handler = None
         self.request_handler_factory = request_handler_factory
 
     def handle_request(self, data):
         if self.initialized:
-            is_alive, code, message = self.request_handler.handle_request(data)
-            if not is_alive:
-                self.initialized = False
+            self.initialized, code, message = self.request_handler.handle_request(data)
+            if not self.initialized:
+                self.command = ''
         else:
-            self.commad += data
+            data = data.decode(ENCODE)
+            self.command += data
             if '\n' in data:
-                self.request_handler = self.request_handler_factory.get_request_handler(data)
-                self.initialized = True
+                self.request_handler = self.request_handler_factory.get_request_handler(self.command)
+                self.initialized, code, message = self.request_handler.handle_request('')
+                if not self.initialized:
+                    self.command = ''
+                return code, message
+

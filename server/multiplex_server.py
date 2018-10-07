@@ -26,13 +26,12 @@ class MultiplexerServer(ServerInterface):
     def process_write_list(self, sockets):
         for s in sockets:
             self.request_handler_wrappers[s]
-            try:
-                next_msg = self.write_data[s].get_nowait()
-            except queue.Queue.Empty:
-                # No messages waiting so stop checking for writability.
-                self.write_list_sockets.remove(s)
-            else:
+
+            if len(self.write_data[s]) > 0:
+                next_msg = self.write_data[s].pop(0)
                 s.send(next_msg)
+            else:
+                self.write_list_sockets.remove(s)
 
     def process_read_list(self, sockets):
         for s in sockets:
@@ -40,15 +39,15 @@ class MultiplexerServer(ServerInterface):
                 client_socket, client_addr = self.socket.accept()
                 print("Connection is established with ", client_addr)
                 self.read_list_sockets.append(client_socket)
-                self.request_handler_wrappers[s] = RequestHandlerWrapper(self.request_handler_factory)
-                self.write_data[s] = queue.Queue(self.QUEUE_FOR_CONNECTORS_SIZE)
+                self.request_handler_wrappers[client_socket] = RequestHandlerWrapper(self.request_handler_factory)
+                self.write_data[client_socket] = []
             else:
                 recv_data = s.recv(self.BUFFER_SIZE)
                 code, data = self.request_handler_wrappers[s].handle_request(recv_data)
                 if code == STOP_SERVER:
                     self.process_disconnect(s)
                 elif code == OK and data is not '':
-                    self.write_data[s].put(data)
+                    self.write_data[s].append(data)
                     if socket not in self.write_list_sockets:
                         self.write_list_sockets.append(s)
                 else:
@@ -57,10 +56,10 @@ class MultiplexerServer(ServerInterface):
 
     def process_disconnect(self, socket):
         self.read_list_sockets.remove(socket)
-        self.request_handler_wrappers.remove(socket)
-        self.write_data.remove(socket)
+        del self.request_handler_wrappers[socket]
+        del self.write_data[socket]
         if socket in self.write_list_sockets:
-            self.write_list_sockets.remove(s)
+            self.write_list_sockets.remove(socket)
         socket.close()
 
     def process_except_list(self, sockets):
