@@ -6,6 +6,11 @@ from sockets.socket_interface import PACKAGE_SIZE, USEFUL_PACKAGE_SIZE
 
 class FileDownloadRequestHandler(RequestHandlerInterface):
 
+    def __init__(self, data):
+        super().__init__(data)
+        self.is_alive = True
+        self.file_is_opened = False
+
     def handle_request(self, socket):
         pack_size = USEFUL_PACKAGE_SIZE
         try:

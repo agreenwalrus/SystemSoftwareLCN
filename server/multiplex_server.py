@@ -46,7 +46,7 @@ class MultiplexerServer(ServerInterface):
                 code, data = self.request_handler_wrappers[s].handle_request(recv_data)
                 if code == STOP_SERVER:
                     self.process_disconnect(s)
-                elif code == OK and data is not '':
+                elif code == OK and data is not None:
                     self.write_data[s].append(data)
                     if socket not in self.write_list_sockets:
                         self.write_list_sockets.append(s)
