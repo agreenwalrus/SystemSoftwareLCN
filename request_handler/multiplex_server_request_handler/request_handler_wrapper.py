@@ -24,6 +24,8 @@ class RequestHandlerWrapper:
             if not self.initialized:
                 self.command = ''
         else:
+            code = OK
+            message = None
             data = data.decode(ENCODE)
             self.command += data
             if '\n' in data:
