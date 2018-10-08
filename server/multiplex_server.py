@@ -43,8 +43,9 @@ class MultiplexerServer(ServerInterface):
                 self.write_data[client_socket] = []
             else:
                 recv_data = s.recv(self.BUFFER_SIZE)
+                print("#RECV DATA", recv_data)
                 code, data = self.request_handler_wrappers[s].handle_request(recv_data)
-                if data is None or code == STOP_SERVER:
+                if len(recv_data) == 0 or code == STOP_SERVER:
                     self.process_disconnect(s)
                 elif code == OK and data is not None:
                     self.write_data[s].append(data)
