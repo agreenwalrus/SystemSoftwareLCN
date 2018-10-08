@@ -117,3 +117,71 @@ id_student INTEGER,
 bonus INTEGER NOT NULL,
 PRIMARY KEY(id_bonus)
 );
+
+lol kek chebureck
+
+
+begin
+--Instantiate the Unit Under Test
+mapping: CarryGeneratorSerial PORT MAP(
+    nP3 => nP3,
+    nG3 => nG3,
+    nP2 => nP2,
+    nG2 => nG2,
+    nP1 => nP1,
+    nG1 => nG1,
+    nP0 => nP0,
+    nG0 => nG0,
+    Cn => Cn
+    );
+--Clock process definition
+
+--vector std_logic = [0-7]
+--vector += 1
+--pobitovo prisvoit' signalam
+    test_process :process
+    begin
+	nP3 <= SigVect(8);
+	nP2 <= SigVect(7);
+	nP1 <= SigVect(6);
+	nP0 <= SigVect(5);
+	nG3 <= SigVect(4);
+	nG2 <= SigVect(3);
+	nG1 <= SigVect(2);
+	nG0 <= SigVect(1);
+	Cn <= SigVect(0);
+	SigVect <= std_logic_vector(to_unsigned(to_integer(unsigned(SigVect)) + 1, 9));
+	wait for 20 ns;
+--        for nP3i in std_ulogic'('0') to std_ulogic'('1') loop
+--           for nP2i in std_ulogic'('0') to std_ulogic'('1') loop
+--                for nP1i in std_ulogic'('0') to std_ulogic'('1') loop
+--                    for nP0i in std_ulogic'('0') to std_ulogic'('1') loop
+--                        for nG3i in std_ulogic'('0') to std_ulogic'('1') loop
+--                           for nG2i in std_ulogic'('0') to std_ulogic'('1') loop
+--                                for nG1i in std_ulogic'('0') to std_ulogic'('1') loop
+--                                    for nG0i in std_ulogic'('0') to std_ulogic'('1') loop
+--                                        for Cni in std_ulogic'('0') to std_ulogic'('1') loop
+--                                            nP3 <= nP3i;  
+--                                            nG3 <= nG3i;
+--                                            nP2 <= nP2i;
+--                                            nG2 <= nG2i;
+--                                            nP1 <= nP1i;
+--                                            nG1 <= nG1i;
+--                                            nP0 <= nP0i;
+--                                            nG0 <= nG0i;
+--                                            Cn <= Cni;
+--                                            wait for 10 ns;
+--                                        end loop; 
+--                                    end loop; 
+--                                end loop; 
+--                            end loop;    
+--                        end loop; 
+--                    end loop; 
+--                end loop; 
+--            end loop; 
+--        end loop; 
+    end process;
+end Behavioral;
+
+pasha
+

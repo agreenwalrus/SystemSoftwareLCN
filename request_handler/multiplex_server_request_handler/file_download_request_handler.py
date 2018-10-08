@@ -17,6 +17,7 @@ class FileDownloadRequestHandler(RequestHandlerInterface):
     def handle_request(self, socket):
         try:
             if not self.file_is_opened:
+                print("if not self.file_is_opened")
                 file_name, data = self.parse_params_and_data()
                 statinfo = os.stat('./files_server/' + file_name)
                 self.file = open('./files_server/' + file_name, 'rb')
@@ -26,7 +27,7 @@ class FileDownloadRequestHandler(RequestHandlerInterface):
                 self.file_is_opened = True
                 msg = self.file_size_remaining.to_bytes(8, 'big')
             else:
-
+                print("if self.file_is_opened")
                 if self.file_size_remaining < self.pack_size:
                     self.pack_size = self.file_size_remaining
                 msg = self.file.read(self.pack_size)
@@ -38,13 +39,17 @@ class FileDownloadRequestHandler(RequestHandlerInterface):
             code = OK
 
         except IOError:
+            self.is_alive = False
+            print("except IOError")
             self.file_size_remaining = -1
             msg = self.file_size_remaining.to_bytes(8, 'big', signed=True)
+            code = OK
             if self.file_is_opened:
                 self.file.close()
                 self.file_is_opened = False
                 msg = None
-            code = ERROR
+                code = ERROR
+
         return self.is_alive, code, msg
 
 

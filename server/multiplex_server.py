@@ -26,7 +26,7 @@ class MultiplexerServer(ServerInterface):
     def process_write_list(self, sockets):
         for s in sockets:
             self.request_handler_wrappers[s]
-
+            print("process_write_list ", s, len(self.write_data[s]))
             if len(self.write_data[s]) > 0:
                 next_msg = self.write_data[s].pop(0)
                 s.send(next_msg)
@@ -44,7 +44,7 @@ class MultiplexerServer(ServerInterface):
             else:
                 recv_data = s.recv(self.BUFFER_SIZE)
                 code, data = self.request_handler_wrappers[s].handle_request(recv_data)
-                if code == STOP_SERVER:
+                if data is None or code == STOP_SERVER:
                     self.process_disconnect(s)
                 elif code == OK and data is not None:
                     self.write_data[s].append(data)
@@ -80,15 +80,15 @@ class MultiplexerServer(ServerInterface):
             read, write, excpt = select.select(self.read_list_sockets,
                                                self.write_list_sockets,
                                                self.read_list_sockets)
-            print("read ", read)
             if (len(read) == 0
                     and len(write) == 0
                     and len(excpt) == 0):
                 self.stop_server()
 
+            self.process_except_list(excpt)
             self.process_read_list(read)
             self.process_write_list(write)
-            self.process_except_list(excpt)
+
         self.__shutdown()
 
     def __shutdown(self):
