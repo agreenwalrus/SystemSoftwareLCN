@@ -42,7 +42,7 @@ class FileUploadRequestHandler((RequestHandlerInterface)):
             self.file_is_opened = False
             code = ERROR
             msg = None
-    
+
         return self.is_alive, code, msg
 
 
