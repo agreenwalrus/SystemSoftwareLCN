@@ -1,10 +1,14 @@
-from server.multiplex_server import MultiplexerServer
-from request_handler_factory.rhf_server.multiplex_remote_console_request_handler_factory import MultiplexRemoteConsoleRequestHandlerFactory
+from server.parallel_server import ParallelServer
+from request_handler_factory.rhf_server.remote_console_request_handler_factory import RemoteConsoleRequestHandlerFactory
 from sockets.tcp_socket import *
-#from sockets.tcp_socket import TCPSocket
+from server.pool.pool_of_threads import ThreadsPool
+from server.pool.pool_of_processes import ProcessesPool
 
-server = MultiplexerServer("0.0.0.0", 37000, socket(AF_INET, SOCK_STREAM), MultiplexRemoteConsoleRequestHandlerFactory())
-server.start_server()
+if __name__ == '__main__':
+    MAX_AMOUNT_OF_CLIENTS = 2
+    server = ParallelServer("0.0.0.0", 37000, socket(AF_INET, SOCK_STREAM), RemoteConsoleRequestHandlerFactory(),
+                            MAX_AMOUNT_OF_CLIENTS, ThreadsPool)
+    server.start_server()
 
 # if __name__=='__main__':
 #     address = ''

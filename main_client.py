@@ -6,8 +6,9 @@ import re
 from socket import *
 #from sockets.tcp_socket import TCPSocket
 
-client = SerialTCPSocketClient("127.0.0.1", 37000, socket(AF_INET, SOCK_STREAM), RemoteConsoleRequestHandlerFactory())
-client.start_client()
+if __name__=='__main__':
+    client = SerialTCPSocketClient("127.0.0.1", 37000, socket(AF_INET, SOCK_STREAM), RemoteConsoleRequestHandlerFactory())
+    client.start_client()
 #
 
 # if __name__=='__main__':
