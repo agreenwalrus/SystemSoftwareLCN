@@ -13,4 +13,4 @@ class ProcessesPool(PoolInterface):
         self.pool.close()
 
     def execute(self, funct, socket):
-        self.pool.submit(funct, socket[0], socket[1])
+        return self.pool.submit(funct, socket[0], socket[1])

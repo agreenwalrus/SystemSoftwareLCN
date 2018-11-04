@@ -8,7 +8,7 @@ class ThreadsPool(PoolInterface):
         self.pool = ThreadPoolExecutor(self.max_amount)
 
     def shutdown(self, timeout):
-        self.pool.shutdown(timeout)
+        return self.pool.shutdown(timeout)
 
-    def execute(self, funct, socket):
-        self.pool.submit(funct, socket)
+    def execute(self, funct, socket, addr):
+        return self.pool.submit(funct, socket, addr)
